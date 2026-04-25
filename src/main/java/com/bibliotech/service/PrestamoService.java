@@ -3,6 +3,8 @@ package com.bibliotech.service;
 import com.bibliotech.model.*;
 import com.bibliotech.repository.Repository;
 
+import java.time.temporal.ChronoUnit;
+
 public class PrestamoService {
 
     private final Repository<Libro, String> libroRepo;
@@ -24,10 +26,9 @@ public class PrestamoService {
         Socio socio = socioRepo.buscarPorId(socioId)
                 .orElseThrow(() -> new RuntimeException("Socio no existe"));
 
-        Libro libro = libroRepo.buscarPorId(isbn)
+        libroRepo.buscarPorId(isbn)
                 .orElseThrow(() -> new RuntimeException("Libro no existe"));
 
-        // verificar disponibilidad (solo préstamos activos)
         boolean prestado = prestamoRepo.buscarTodos().stream()
                 .anyMatch(p -> p.getIsbn().equals(isbn) && !p.isDevuelto());
 
@@ -35,7 +36,6 @@ public class PrestamoService {
             throw new RuntimeException("Libro no disponible");
         }
 
-        // validar límite del socio
         long cantidad = prestamoRepo.buscarTodos().stream()
                 .filter(p -> p.getSocioId() == socioId && !p.isDevuelto())
                 .count();
@@ -59,6 +59,20 @@ public class PrestamoService {
 
         prestamo.devolver();
 
-        prestamoRepo.guardar(prestamo); // o update si tu repo lo soporta
+        prestamoRepo.guardar(prestamo);
+    }
+
+    public long calcularDiasRetraso(Prestamo prestamo, int diasPermitidos) {
+
+        if (!prestamo.isDevuelto()) {
+            throw new RuntimeException("El libro aún no fue devuelto");
+        }
+
+        long dias = ChronoUnit.DAYS.between(
+                prestamo.getFecha(),
+                prestamo.getFechaDevolucion()
+        );
+
+        return Math.max(0, dias - diasPermitidos);
     }
 }
