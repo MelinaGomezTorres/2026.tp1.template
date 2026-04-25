@@ -2,7 +2,8 @@ package com.bibliotech.service;
 
 import com.bibliotech.model.Socio;
 import com.bibliotech.repository.Repository;
-import com.bibliotech.exception.*;
+import com.bibliotech.exception.DniDuplicadoException;
+import com.bibliotech.exception.EmailInvalidoException;
 
 import java.util.regex.Pattern;
 
@@ -17,13 +18,13 @@ public class SocioService {
     public void registrar(Socio socio) {
 
         // validar email
-        if (!Pattern.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$", socio.email())) {
+        if (!Pattern.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$", socio.getEmail())) {
             throw new EmailInvalidoException("Email inválido");
         }
 
         // validar DNI único
         boolean existe = repo.buscarTodos().stream()
-                .anyMatch(s -> s.dni().equals(socio.dni()));
+                .anyMatch(s -> s.getDni().equals(socio.getDni()));
 
         if (existe) {
             throw new DniDuplicadoException("DNI ya registrado");

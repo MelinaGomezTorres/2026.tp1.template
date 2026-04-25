@@ -1,6 +1,7 @@
 package com.bibliotech.model;
 
 public abstract class Socio {
+
     protected int id;
     protected String nombre;
     protected String dni;
@@ -11,6 +12,14 @@ public abstract class Socio {
         this.nombre = nombre;
         this.dni = dni;
         this.email = email;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public abstract int maxLibros();
