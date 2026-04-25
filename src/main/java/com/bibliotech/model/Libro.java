@@ -5,5 +5,6 @@ public record Libro(
         String titulo,
         String autor,
         int anio,
-        String categoria
+        String categoria,
+        TipoEjemplar tipo
 ) implements Recurso {}
