@@ -7,6 +7,7 @@ public class Prestamo {
     private int socioId;
     private String isbn;
     private LocalDate fecha;
+    private LocalDate fechaDevolucion;
     private boolean devuelto;
 
     public Prestamo(int socioId, String isbn) {
@@ -14,10 +15,12 @@ public class Prestamo {
         this.isbn = isbn;
         this.fecha = LocalDate.now();
         this.devuelto = false;
+        this.fechaDevolucion = null;
     }
 
     public void devolver() {
         this.devuelto = true;
+        this.fechaDevolucion = LocalDate.now();
     }
 
     public boolean isDevuelto() {
@@ -30,5 +33,13 @@ public class Prestamo {
 
     public String getIsbn() {
         return isbn;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public LocalDate getFechaDevolucion() {
+        return fechaDevolucion;
     }
 }
