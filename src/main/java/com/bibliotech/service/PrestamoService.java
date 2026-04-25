@@ -4,21 +4,25 @@ import com.bibliotech.model.*;
 import com.bibliotech.repository.Repository;
 
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class PrestamoService {
 
     private final Repository<Libro, String> libroRepo;
     private final Repository<Socio, Integer> socioRepo;
     private final Repository<Prestamo, Integer> prestamoRepo;
+    private final Repository<Historial, Integer> historialRepo;
 
     public PrestamoService(
             Repository<Libro, String> libroRepo,
             Repository<Socio, Integer> socioRepo,
-            Repository<Prestamo, Integer> prestamoRepo) {
+            Repository<Prestamo, Integer> prestamoRepo,
+            Repository<Historial, Integer> historialRepo) {
 
         this.libroRepo = libroRepo;
         this.socioRepo = socioRepo;
         this.prestamoRepo = prestamoRepo;
+        this.historialRepo = historialRepo;
     }
 
     public void registrarPrestamo(String isbn, int socioId) {
@@ -46,6 +50,8 @@ public class PrestamoService {
 
         Prestamo prestamo = new Prestamo(socioId, isbn);
         prestamoRepo.guardar(prestamo);
+
+        historialRepo.guardar(new Historial(socioId, isbn, "PRESTAMO"));
     }
 
     public void registrarDevolucion(String isbn, int socioId) {
@@ -60,6 +66,8 @@ public class PrestamoService {
         prestamo.devolver();
 
         prestamoRepo.guardar(prestamo);
+
+        historialRepo.guardar(new Historial(socioId, isbn, "DEVOLUCION"));
     }
 
     public long calcularDiasRetraso(Prestamo prestamo, int diasPermitidos) {
@@ -74,5 +82,9 @@ public class PrestamoService {
         );
 
         return Math.max(0, dias - diasPermitidos);
+    }
+
+    public List<Historial> obtenerHistorial() {
+        return historialRepo.buscarTodos();
     }
 }
