@@ -2,10 +2,6 @@ package com.bibliotech.service;
 
 import com.bibliotech.model.*;
 import com.bibliotech.repository.Repository;
-import com.bibliotech.exception.*;
-
-import java.util.List;
-import java.util.Optional;
 
 public class PrestamoService {
 
@@ -25,33 +21,44 @@ public class PrestamoService {
 
     public void registrarPrestamo(String isbn, int socioId) {
 
-        // 1. buscar socio
         Socio socio = socioRepo.buscarPorId(socioId)
                 .orElseThrow(() -> new RuntimeException("Socio no existe"));
 
-        // 2. buscar libro
         Libro libro = libroRepo.buscarPorId(isbn)
                 .orElseThrow(() -> new RuntimeException("Libro no existe"));
 
-        // 3. validar disponibilidad (simplificado)
+        // verificar disponibilidad (solo préstamos activos)
         boolean prestado = prestamoRepo.buscarTodos().stream()
-                .anyMatch(p -> p.getIsbn().equals(isbn));
+                .anyMatch(p -> p.getIsbn().equals(isbn) && !p.isDevuelto());
 
         if (prestado) {
             throw new RuntimeException("Libro no disponible");
         }
 
-        // 4. validar límite de libros del socio
+        // validar límite del socio
         long cantidad = prestamoRepo.buscarTodos().stream()
-                .filter(p -> p.getSocioId() == socioId)
+                .filter(p -> p.getSocioId() == socioId && !p.isDevuelto())
                 .count();
 
         if (cantidad >= socio.maxLibros()) {
             throw new RuntimeException("Límite de libros alcanzado");
         }
 
-        // 5. registrar préstamo
         Prestamo prestamo = new Prestamo(socioId, isbn);
         prestamoRepo.guardar(prestamo);
+    }
+
+    public void registrarDevolucion(String isbn, int socioId) {
+
+        Prestamo prestamo = prestamoRepo.buscarTodos().stream()
+                .filter(p -> p.getIsbn().equals(isbn)
+                        && p.getSocioId() == socioId
+                        && !p.isDevuelto())
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Préstamo no encontrado"));
+
+        prestamo.devolver();
+
+        prestamoRepo.guardar(prestamo); // o update si tu repo lo soporta
     }
 }
