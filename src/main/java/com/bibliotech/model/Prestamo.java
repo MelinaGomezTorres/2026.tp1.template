@@ -4,9 +4,9 @@ import java.time.LocalDate;
 
 public class Prestamo {
 
-    private int socioId;
-    private String isbn;
-    private LocalDate fecha;
+    private final int socioId;
+    private final String isbn;
+    private final LocalDate fecha;
     private LocalDate fechaDevolucion;
     private boolean devuelto;
 
