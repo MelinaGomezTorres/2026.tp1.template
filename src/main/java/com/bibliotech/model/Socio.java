@@ -22,9 +22,7 @@ public abstract class Socio {
         return email;
     }
 
-    public abstract int maxLibros(); {
-
-    }
+    public abstract int maxLibros();
 
     public int getId() {
         return id;

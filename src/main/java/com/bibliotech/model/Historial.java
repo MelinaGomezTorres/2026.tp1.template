@@ -1,19 +1,19 @@
 package com.bibliotech.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Historial {
 
-    private int socioId;
-    private String isbn;
-    private String operacion; // PRESTAMO / DEVOLUCION
-    private LocalDate fecha;
+    private final int socioId;
+    private final String isbn;
+    private final String operacion;
+    private final LocalDateTime fecha;
 
     public Historial(int socioId, String isbn, String operacion) {
         this.socioId = socioId;
         this.isbn = isbn;
         this.operacion = operacion;
-        this.fecha = LocalDate.now();
+        this.fecha = LocalDateTime.now();
     }
 
     public int getSocioId() {
@@ -28,7 +28,7 @@ public class Historial {
         return operacion;
     }
 
-    public LocalDate getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 }
