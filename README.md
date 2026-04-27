@@ -5,11 +5,11 @@
 
 ### Datos del Alumno
 
-| Campo | Respuesta |
-| :--- | :--- |
-| **Nombre** | |
-| **Apellido** | |
-| **Legajo** | |
+| Campo | Respuesta        |
+| :--- |:-----------------|
+| **Nombre** | Melina Abril     |
+| **Apellido** | Gomez Torres     |
+| **Legajo** | 63211            |
 
 > **Fecha de entrega:** 28 de Abril de 2026
 

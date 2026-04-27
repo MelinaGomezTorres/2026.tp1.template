@@ -2,6 +2,7 @@ package com.bibliotech.service;
 
 import com.bibliotech.model.*;
 import com.bibliotech.repository.Repository;
+import com.bibliotech.exception.*;
 
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -28,16 +29,16 @@ public class PrestamoService {
     public void registrarPrestamo(String isbn, int socioId) {
 
         Socio socio = socioRepo.buscarPorId(socioId)
-                .orElseThrow(() -> new RuntimeException("Socio no existe"));
+                .orElseThrow(() -> new SocioNoExisteException("Socio no existe"));
 
         libroRepo.buscarPorId(isbn)
-                .orElseThrow(() -> new RuntimeException("Libro no existe"));
+                .orElseThrow(() -> new LibroNoExisteException("Libro no existe"));
 
         boolean prestado = prestamoRepo.buscarTodos().stream()
                 .anyMatch(p -> p.getIsbn().equals(isbn) && !p.isDevuelto());
 
         if (prestado) {
-            throw new RuntimeException("Libro no disponible");
+            throw new LibroNoDisponibleException("Libro no disponible");
         }
 
         long cantidad = prestamoRepo.buscarTodos().stream()
@@ -45,7 +46,7 @@ public class PrestamoService {
                 .count();
 
         if (cantidad >= socio.maxLibros()) {
-            throw new RuntimeException("Límite de libros alcanzado");
+            throw new LimitePrestamoException("Límite de libros alcanzado");
         }
 
         Prestamo prestamo = new Prestamo(socioId, isbn);
@@ -61,7 +62,7 @@ public class PrestamoService {
                         && p.getSocioId() == socioId
                         && !p.isDevuelto())
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Préstamo no encontrado"));
+                .orElseThrow(() -> new PrestamoNoEncontradoException("Préstamo no encontrado"));
 
         prestamo.devolver();
 
@@ -73,7 +74,7 @@ public class PrestamoService {
     public long calcularDiasRetraso(Prestamo prestamo, int diasPermitidos) {
 
         if (!prestamo.isDevuelto()) {
-            throw new RuntimeException("El libro aún no fue devuelto");
+            throw new PrestamoNoDevueltoException("El libro aún no fue devuelto");
         }
 
         long dias = ChronoUnit.DAYS.between(
